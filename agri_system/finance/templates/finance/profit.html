@@ -1,0 +1,146 @@
+{% extends 'finance/base.html' %}
+
+{% block content %}
+
+<h2 class="text-center mb-4">🌾 Farm Financial Report</h2>
+
+<div class="row text-center mb-4">
+
+    <div class="col-md-4">
+        <div class="card shadow border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">Total Income</h5>
+                <h4>₹ {{ income }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow border-danger">
+            <div class="card-body">
+                <h5 class="card-title text-danger">Total Expense</h5>
+                <h4>₹ {{ expense }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        {% if profit >= 0 %}
+        <div class="card shadow border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">Profit</h5>
+                <h4>₹ {{ profit }}</h4>
+            </div>
+        </div>
+        {% else %}
+        <div class="card shadow border-danger">
+            <div class="card-body">
+                <h5 class="card-title text-danger">Loss</h5>
+                <h4>₹ {{ profit }}</h4>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Income Table -->
+<h4>Income Details</h4>
+<table class="table table-bordered table-striped">
+    <thead class="table-success">
+        <tr>
+            <th>Crop</th>
+            <th>Amount (₹)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in incomes %}
+        <tr>
+            <td>{{ i.crop }}</td>
+            <td>{{ i.amount }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2" class="text-center">No income records</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Expense Table -->
+<h4 class="mt-4">Expense Details</h4>
+<table class="table table-bordered table-striped">
+    <thead class="table-danger">
+        <tr>
+            <th>Category</th>
+            <th>Amount (₹)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in expenses %}
+        <tr>
+            <td>{{ e.category }}</td>
+            <td>{{ e.amount }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2" class="text-center">No expense records</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr class="my-5">
+
+<h4 class="text-center">📊 Income vs Expense Chart</h4>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <canvas id="financeChart"></canvas>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const income = Number("{{ income }}");
+    const expense = Number("{{ expense }}");
+
+    const ctx = document.getElementById('financeChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Income', 'Expense'],
+            datasets: [{
+                label: 'Amount (₹)',
+                data: [income, expense],
+                backgroundColor: [
+                    'rgba(46, 204, 113, 0.7)',
+                    'rgba(231, 76, 60, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(46, 204, 113, 1)',
+                    'rgba(231, 76, 60, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}
+
+
+
+{% endblock %}
